@@ -1,215 +1,3 @@
-
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StudyMatch Memory Game</title>
-
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  background: #eeeeee;
-  color: #333;
-  text-align: center;
-}
-
-.container {
-  max-width: 600px;
-  margin: auto;
-  background: white;
-  padding: 25px;
-  border-radius: 18px;
-}
-
-h1 {
-  color: #3979bd;
-  margin-bottom: 8px;
-}
-
-.instruction {
-  color: #777;
-  font-size: 14px;
-  margin-bottom: 20px;
-}
-
-.info {
-  display: flex;
-  justify-content: space-around;
-  margin: 20px 0;
-  gap: 10px;
-}
-
-.info div {
-  background: #eaf3fc;
-  padding: 12px;
-  border-radius: 10px;
-  flex: 1;
-}
-
-.info span {
-  display: block;
-  font-size: 20px;
-  font-weight: bold;
-  color: #3979bd;
-  margin-top: 5px;
-}
-
-#status {
-  color: #3979bd;
-  font-weight: bold;
-  margin: 15px 0;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin: 20px auto;
-}
-
-.card {
-  height: 110px;
-  background: #6da5dc;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 42px;
-  cursor: pointer;
-  user-select: none;
-  transition: 0.2s;
-  color: white;
-}
-
-.card.hidden {
-  background: #6da5dc;
-  font-size: 30px;
-}
-
-.card.hidden::after {
-  content: "?";
-}
-
-.card.matched {
-  background: #b8d9f5;
-  cursor: default;
-}
-
-button {
-  background: #3979bd;
-  color: white;
-  border: none;
-  padding: 12px 22px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 15px;
-  margin: 5px;
-}
-
-button:hover {
-  background: #285f99;
-}
-
-.progress {
-  width: 100%;
-  height: 9px;
-  background: #e2e2e2;
-  border-radius: 20px;
-  overflow: hidden;
-  margin: 15px 0;
-}
-
-#progressBar {
-  height: 100%;
-  width: 0%;
-  background: #3979bd;
-  transition: 0.3s;
-}
-
-@media (max-width: 400px) {
-  .card {
-    height: 90px;
-    font-size: 35px;
-  }
-
-  .container {
-    padding: 15px;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<div class="container">
-
-  <h1>Memory Game</h1>
-
-  <p class="instruction">
-    Hafalkan posisi emoji selama 7 detik, lalu cari pasangan yang sama!
-  </p>
-
-  <div class="info">
-    <div>
-      Time
-      <span id="timer">7</span>
-    </div>
-
-    <div>
-      Moves
-      <span id="moves">0</span>
-    </div>
-
-    <div>
-      Pairs
-      <span id="pairs">0/6</span>
-    </div>
-  </div>
-
-  <div class="progress">
-    <div id="progressBar"></div>
-  </div>
-
-  <p id="status">Hafalkan posisi kartunya!</p>
-
-  <div class="grid" id="gameGrid"></div>
-
-  <button onclick="startGame()">Restart Game</button>
-
-</div>
-
-<script>
-const emojis = ["🐏", "🐑", "🐳", "🐋", "🐪", "🐫"];
-
-let cards = [];
-let firstCard = null;
-let secondCard = null;
-let locked = true;
-let moves = 0;
-let pairs = 0;
-let time = 7;
-let gameTimer;
-let previewTimer;
-let gameStarted = false;
-
-const grid = document.getElementById("gameGrid");
-const timerDisplay = document.getElementById("timer");
-const movesDisplay = document.getElementById("moves");
-const pairsDisplay = document.getElementById("pairs");
-const statusDisplay = document.getElementById("status");
-const progressBar = document.getElementById("progressBar");
-
-function shuffle(array) {
-  return array.sort(() => Math.random() - 0.5);
-}
-
 function startGame() {
   clearInterval(gameTimer);
   clearInterval(previewTimer);
@@ -224,8 +12,8 @@ function startGame() {
   time = 7;
   gameStarted = false;
 
-  timerDisplay.textContent = time;
-  movesDisplay.textContent = moves;
+  timerDisplay.textContent = "7";
+  movesDisplay.textContent = "0";
   pairsDisplay.textContent = "0/6";
   progressBar.style.width = "0%";
 
@@ -233,141 +21,25 @@ function startGame() {
 
   cards.forEach((emoji, index) => {
     const card = document.createElement("div");
-
     card.classList.add("card");
     card.textContent = emoji;
     card.dataset.emoji = emoji;
-    card.dataset.index = index;
-
     grid.appendChild(card);
   });
 
   statusDisplay.textContent = "Hafalkan posisi kartunya!";
 
-  // Waktu menghafal 7 detik
+  let countdown = 7;
+
   previewTimer = setInterval(() => {
-    time--;
-    timerDisplay.textContent = time;
+    countdown--;
 
-    if (time <= 0) {
+    if (countdown <= 0) {
       clearInterval(previewTimer);
+      timerDisplay.textContent = "0";
       hideAllCards();
-    }
-  }, 1000);
-}
-
-function hideAllCards() {
-  document.querySelectorAll(".card").forEach(card => {
-    card.classList.add("hidden");
-    card.textContent = "";
-  });
-
-  locked = false;
-  gameStarted = true;
-
-  statusDisplay.textContent =
-    "Sekarang cari pasangan emoji yang sama!";
-
-  startTimer();
-}
-
-function startTimer() {
-  let seconds = 0;
-
-  gameTimer = setInterval(() => {
-    seconds++;
-    timerDisplay.textContent = seconds;
-  }, 1000);
-}
-
-grid.addEventListener("click", function(event) {
-  const card = event.target;
-
-  if (
-    !card.classList.contains("card") ||
-    !gameStarted ||
-    locked ||
-    card.classList.contains("matched") ||
-    !card.classList.contains("hidden")
-  ) {
-    return;
-  }
-
-  card.classList.remove("hidden");
-  card.textContent = card.dataset.emoji;
-
-  if (!firstCard) {
-    firstCard = card;
-    return;
-  }
-
-  secondCard = card;
-  moves++;
-  movesDisplay.textContent = moves;
-
-  locked = true;
-
-  if (firstCard.dataset.emoji === secondCard.dataset.emoji) {
-
-    firstCard.classList.add("matched");
-    secondCard.classList.add("matched");
-
-    pairs++;
-    pairsDisplay.textContent = pairs + "/6";
-
-    progressBar.style.width = (pairs / 6 * 100) + "%";
-
-    resetTurn();
-
-    if (pairs === 6) {
-      finishGame();
     } else {
-      statusDisplay.textContent =
-        "Benar! Kamu menemukan pasangan.";
+      timerDisplay.textContent = countdown;
     }
-
-  } else {
-
-    statusDisplay.textContent = "Belum cocok, coba lagi!";
-
-    setTimeout(() => {
-      firstCard.classList.add("hidden");
-      secondCard.classList.add("hidden");
-
-      firstCard.textContent = "";
-      secondCard.textContent = "";
-
-      resetTurn();
-    }, 850);
-  }
-});
-
-function resetTurn() {
-  firstCard = null;
-  secondCard = null;
-  locked = false;
+  }, 1000);
 }
-
-function finishGame() {
-  clearInterval(gameTimer);
-
-  gameStarted = false;
-  locked = true;
-
-  statusDisplay.textContent =
-    "Selamat! Semua pasangan berhasil ditemukan 🎉";
-
-  setTimeout(() => {
-    alert(
-      "Game selesai!\n" +
-      "Waktu: " + timerDisplay.textContent + " detik\n" +
-      "Moves: " + moves
-    );
-  }, 300);
-}
-
-startGame();
-</script>
-
-</body>
-</html>
