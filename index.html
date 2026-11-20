@@ -151,14 +151,15 @@ button:hover {
 <div class="container">
 
   <h1>Memory Game</h1>
+
   <p class="instruction">
-    Hafalkan posisi emoji selama 10 detik, lalu cari pasangan yang sama!
+    Hafalkan posisi emoji selama 7 detik, lalu cari pasangan yang sama!
   </p>
 
   <div class="info">
     <div>
       Time
-      <span id="timer">10</span>
+      <span id="timer">7</span>
     </div>
 
     <div>
@@ -193,7 +194,7 @@ let secondCard = null;
 let locked = true;
 let moves = 0;
 let pairs = 0;
-let time = 10;
+let time = 7;
 let gameTimer;
 let previewTimer;
 let gameStarted = false;
@@ -214,12 +215,13 @@ function startGame() {
   clearInterval(previewTimer);
 
   cards = shuffle([...emojis, ...emojis]);
+
   firstCard = null;
   secondCard = null;
   locked = true;
   moves = 0;
   pairs = 0;
-  time = 10;
+  time = 7;
   gameStarted = false;
 
   timerDisplay.textContent = time;
@@ -242,7 +244,7 @@ function startGame() {
 
   statusDisplay.textContent = "Hafalkan posisi kartunya!";
 
-  // Tampilkan semua kartu selama 10 detik
+  // Waktu menghafal 7 detik
   previewTimer = setInterval(() => {
     time--;
     timerDisplay.textContent = time;
@@ -263,7 +265,9 @@ function hideAllCards() {
   locked = false;
   gameStarted = true;
 
-  statusDisplay.textContent = "Sekarang cari pasangan emoji yang sama!";
+  statusDisplay.textContent =
+    "Sekarang cari pasangan emoji yang sama!";
+
   startTimer();
 }
 
@@ -304,6 +308,7 @@ grid.addEventListener("click", function(event) {
   locked = true;
 
   if (firstCard.dataset.emoji === secondCard.dataset.emoji) {
+
     firstCard.classList.add("matched");
     secondCard.classList.add("matched");
 
@@ -317,10 +322,12 @@ grid.addEventListener("click", function(event) {
     if (pairs === 6) {
       finishGame();
     } else {
-      statusDisplay.textContent = "Benar! Kamu menemukan pasangan.";
+      statusDisplay.textContent =
+        "Benar! Kamu menemukan pasangan.";
     }
 
   } else {
+
     statusDisplay.textContent = "Belum cocok, coba lagi!";
 
     setTimeout(() => {
@@ -343,6 +350,7 @@ function resetTurn() {
 
 function finishGame() {
   clearInterval(gameTimer);
+
   gameStarted = false;
   locked = true;
 
