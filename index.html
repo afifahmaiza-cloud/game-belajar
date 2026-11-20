@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyMatch Game</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #fff0f5;
+  text-align: center;
+  padding: 20px;
+  color: #444;
+}
+
+.container {
+  background: white;
+  max-width: 550px;
+  margin: 30px auto;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px #e8cbd8;
+}
+
+h1 {
+  color: #d66b91;
+}
+
+.question {
+  font-size: 19px;
+  margin: 25px 0;
+}
+
+button {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 12px;
+  background: #f8c9dc;
+  color: #444;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #efa5c2;
+}
+
+#result {
+  display: none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>♡ StudyMatch Game ♡</h1>
+<p>Temukan teknik belajar yang cocok untukmu!</p>
+
+<div id="quiz">
+  <h3 id="number">Pertanyaan 1</h3>
+  <p class="question" id="question"></p>
+  <div id="answers"></div>
+</div>
+
+<div id="result">
+  <h2>Hasil Belajarmu!</h2>
+  <h3 id="method"></h3>
+  <p id="description"></p>
+  <button onclick="restart()">Main Lagi</button>
+</div>
+
+</div>
+
+<script>
+
+const questions = [
+{
+  q: "Bagaimana kamu biasanya mengingat materi?",
+  a: [
+    ["Membaca ulang materi berkali-kali", "spaced"],
+    ["Mencoba menjawab pertanyaan tanpa melihat buku", "active"],
+    ["Menjelaskan materi dengan bahasa sendiri", "feynman"],
+    ["Membagi catatan menjadi beberapa bagian", "cornell"]
+  ]
+},
+{
+  q: "Bagaimana cara kamu mengatur waktu belajar?",
+  a: [
+    ["Belajar dengan waktu tertentu lalu istirahat", "pomodoro"],
+    ["Mengulang materi pada hari yang berbeda", "spaced"],
+    ["Belajar beberapa topik secara bergantian", "interleaved"],
+    ["Belajar sampai memahami suatu materi", "feynman"]
+  ]
+},
+{
+  q: "Apa yang kamu lakukan setelah membaca materi?",
+  a: [
+    ["Menutup buku dan mencoba mengingat isinya", "active"],
+    ["Membuat rangkuman dan catatan", "cornell"],
+    ["Mengulangnya lagi beberapa hari kemudian", "spaced"],
+    ["Menceritakannya kembali dengan sederhana", "feynman"]
+  ]
+},
+{
+  q: "Apa yang membuatmu lebih nyaman belajar?",
+  a: [
+    ["Sesi belajar singkat dengan jeda", "pomodoro"],
+    ["Mempelajari materi secara bergantian", "interleaved"],
+    ["Menguji diri sendiri", "active"],
+    ["Membuat catatan yang terstruktur", "cornell"]
+  ]
+},
+{
+  q: "Bagaimana kamu menghadapi materi yang sulit?",
+  a: [
+    ["Menjelaskannya seolah-olah mengajar orang lain", "feynman"],
+    ["Mengulang materi secara bertahap", "spaced"],
+    ["Mencoba latihan soal tanpa melihat jawaban", "active"],
+    ["Mempelajari topik lain lalu kembali lagi", "interleaved"]
+  ]
+}
+];
+
+const descriptions = {
+pomodoro: "Pomodoro Technique: belajar dalam sesi waktu tertentu diselingi istirahat.",
+active: "Active Recall: mengingat materi dengan menguji diri sendiri tanpa melihat catatan.",
+spaced: "Spaced Repetition: mengulang materi dengan jeda waktu secara bertahap.",
+feynman: "Feynman Technique: memahami materi dengan menjelaskannya menggunakan bahasa sederhana.",
+cornell: "Cornell Notes: mencatat materi dengan membagi catatan menjadi beberapa bagian.",
+interleaved: "Interleaved Practice: mempelajari beberapa topik secara bergantian."
+};
+
+let current = 0;
+let scores = {
+  pomodoro: 0,
+  active: 0,
+  spaced: 0,
+  feynman: 0,
+  cornell: 0,
+  interleaved: 0
+};
+
+function showQuestion() {
+  document.getElementById("number").innerText =
+    "Pertanyaan " + (current + 1) + " dari " + questions.length;
+
+  document.getElementById("question").innerText =
+    questions[current].q;
+
+  let answerBox = document.getElementById("answers");
+  answerBox.innerHTML = "";
+
+  questions[current].a.forEach(answer => {
+    let btn = document.createElement("button");
+    btn.innerText = answer[0];
+
+    btn.onclick = function() {
+      scores[answer[1]]++;
+      current++;
+
+      if (current < questions.length) {
+        showQuestion();
+      } else {
+        showResult();
+      }
+    };
+
+    answerBox.appendChild(btn);
+  });
+}
+
+function showResult() {
+  document.getElementById("quiz").style.display = "none";
+  document.getElementById("result").style.display = "block";
+
+  let highest = Math.max(...Object.values(scores));
+  let winners = Object.keys(scores).filter(
+    key => scores[key] === highest
+  );
+
+  let winner = winners[Math.floor(Math.random() * winners.length)];
+
+  let names = {
+    pomodoro: "Pomodoro Technique 🍅",
+    active: "Active Recall 🧠",
+    spaced: "Spaced Repetition 📚",
+    feynman: "Feynman Technique 💡",
+    cornell: "Cornell Notes 📝",
+    interleaved: "Interleaved Practice 🔄"
+  };
+
+  document.getElementById("method").innerText = names[winner];
+  document.getElementById("description").innerText =
+    descriptions[winner];
+}
+
+function restart() {
+  current = 0;
+
+  Object.keys(scores).forEach(key => {
+    scores[key] = 0;
+  });
+
+  document.getElementById("result").style.display = "none";
+  document.getElementById("quiz").style.display = "block";
+
+  showQuestion();
+}
+
+showQuestion();
+
+</script>
+
+</body>
+</html>
